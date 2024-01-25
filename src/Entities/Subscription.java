@@ -2,9 +2,11 @@ package Entities;
 
 import Entities.Contacts.Contact;
 import Entities.Services.Service;
+import Entities.Services.ServiceType;
 import Enums.State;
 
 import java.util.Date;
+import java.util.Dictionary;
 import java.util.List;
 
 public class Subscription {
@@ -12,7 +14,7 @@ public class Subscription {
     private String phoneNumber;
     private Date currentDate;
     private State state;
-    private List<Service> services;
+    private Dictionary<ServiceType, Service> services;
     private Contact contact;
     public Subscription() {
     }
