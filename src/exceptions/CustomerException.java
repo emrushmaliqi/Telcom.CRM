@@ -1,0 +1,11 @@
+package exceptions;
+
+public class CustomerException extends RuntimeException{
+    public CustomerException(String message) {
+        super(message);
+    }
+
+    public CustomerException(Throwable cause) {
+        super(cause);
+    }
+}
