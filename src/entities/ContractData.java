@@ -1,10 +1,9 @@
 package entities;
 import enums.ContactType;
+import enums.ContractType;
 import enums.State;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import models.Customer;
 
 import java.util.Date;
@@ -15,12 +14,16 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "ContractData.findById", query = "SELECT c FROM ContractData c WHERE c.id = :id"),
+        @NamedQuery(name = "ContractData.findAll", query = "SELECT c FROM ContractData c")
+})
 public class ContractData {
     @Id
     private int id;
 
     @Enumerated(value = EnumType.STRING)
-    private ContactType type;
+    private ContractType type;
 
     @Column
     @Temporal(TemporalType.DATE)
@@ -34,7 +37,7 @@ public class ContractData {
 
     @ManyToOne
     @JoinColumn(name = "id")
-    private Customer customer;
+    private CustomerData customer;
 
     @OneToOne
     @JoinColumn(name = "contact_id")

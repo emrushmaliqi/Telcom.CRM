@@ -5,31 +5,32 @@ import models.Customer;
 import models.Subscription;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TelecomService {
-    void createCustomer();
+    void createCustomer(Customer customer);
     boolean updateCustomer(Customer customer);
 
     boolean deleteCustomerById(int id);
 
-    Customer findCustomerById(int id);
+    Optional<Customer> findCustomerById(int id);
 
-    List<Customer> findAllCustomers();
+    Optional<List<Customer>> findAllCustomers();
 
-    void createContract();
+    void createContract(Contract contract);
     boolean updateContract(Contract contract);
 
     boolean deleteContractById(int id);
 
-    Contract findContractById(int id);
+    Optional<Contract> findContractById(int id);
 
-    List<Contract> findAllContracts();
+    Optional<List<Contract>> findAllContracts();
 
-    void createSubscription();
+    void createSubscription(Subscription subscription);
     boolean updateSubscription(Subscription subscription);
     boolean deleteSubscriptionById(int id);
 
-    Subscription findSubscriptionById(int id);
+    Optional<Subscription> findSubscriptionById(int id);
 
-    List<Subscription> findAllSubscriptions();
+    Optional<List<Subscription>> findAllSubscriptions();
 }

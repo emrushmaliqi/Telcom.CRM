@@ -20,7 +20,15 @@ public class ServiceData {
     private long id;
 
 
-    private ServiceType type;
+    @Column
+    private double data;
+
+
+    @Column
+    private int minutes;
+
+    @Column
+    private int messages;
 
     @Column
     @Temporal(TemporalType.DATE)

@@ -16,6 +16,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "SubscriptionData.findById", query = "SELECT s FROM SubscriptionData s WHERE s.id = :id"),
+        @NamedQuery(name = "SubscriptionData.findAll", query = "SELECT s FROM SubscriptionData s")
+})
 public class SubscriptionData {
 
     @Id
@@ -32,10 +36,6 @@ public class SubscriptionData {
     @Enumerated(EnumType.ORDINAL)
     private State state;
 
-    @OneToOne
-    @JoinColumn(name = "contact_id")
-    private ContactData contact;
-
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "SUBSCRIPTION_PRODUCT",
@@ -43,4 +43,8 @@ public class SubscriptionData {
             inverseJoinColumns = @JoinColumn(name = "id")
     )
     private List<ProductData> products;
+
+    @OneToOne
+    @JoinColumn(name = "contact_id")
+    private ContactData contact;
 }

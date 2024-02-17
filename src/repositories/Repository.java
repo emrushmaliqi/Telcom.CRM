@@ -1,14 +1,15 @@
 package repositories;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Repository<T> {
-    void create();
+    void create(T type);
     boolean update(T type);
 
     boolean deleteById(int id);
 
-    T findById(int id);
+    Optional<T> findById(int id);
 
-    List<T> findAll();
+    Optional<List<T>> findAll();
 }

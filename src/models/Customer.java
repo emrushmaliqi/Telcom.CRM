@@ -1,5 +1,6 @@
 package models;
 
+import lombok.*;
 import models.contacts.Contact;
 import enums.CustomerType;
 import enums.State;
@@ -8,7 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+@Setter
+@Getter
+@AllArgsConstructor
 public class Customer {
+    @Setter(AccessLevel.NONE)
     private int id;
     private CustomerType type;
     private Date createdDate;

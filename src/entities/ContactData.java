@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Entity
+@IdClass(ContactId.class)
 @Table(name = "CONTACT")
 @Data
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class ContactData {
     @Id
     private int id;
 
+    @Id
     @Enumerated(value = EnumType.STRING)
     private ContactType type;
 
