@@ -2,9 +2,13 @@ package models.contacts;
 
 import enums.ContactType;
 import enums.State;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
+@Getter
+@Setter
 public class IndividualContact extends Contact{
     private String name;
     private String lastName;

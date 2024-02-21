@@ -7,20 +7,23 @@ import repositories.ContractRepository;
 import repositories.CustomerRepository;
 import repositories.SubscriptionRepository;
 import repositories.factories.RepositoryFactory;
+import repositories.impl.ContractJpaRepository;
+import repositories.impl.CustomerJpaRepository;
+import repositories.impl.SubscriptionJpaRepository;
 import services.TelecomService;
 
 import java.util.List;
 import java.util.Optional;
 
 public class TelecomServiceImpl implements TelecomService {
-    private CustomerRepository customerRepository;
-    private ContractRepository contractRepository;
-    private SubscriptionRepository subscriptionRepository;
+    private CustomerRepository customerRepository = new CustomerJpaRepository();;
+    private ContractRepository contractRepository = new ContractJpaRepository();;
+    private SubscriptionRepository subscriptionRepository = new SubscriptionJpaRepository();
 
     public TelecomServiceImpl() {
-        customerRepository = RepositoryFactory.getRepository(CustomerRepository.class);
-        contractRepository = RepositoryFactory.getRepository(ContractRepository.class);
-        subscriptionRepository = RepositoryFactory.getRepository(SubscriptionRepository.class);
+//        customerRepository = RepositoryFactory.getRepository(CustomerJpaRepository.class);
+//        contractRepository = RepositoryFactory.getRepository(ContractJpaRepository.class);
+//        subscriptionRepository = RepositoryFactory.getRepository(SubscriptionJpaRepository.class);
     }
 
     @Override

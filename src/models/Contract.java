@@ -12,7 +12,7 @@ import enums.State;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,6 +25,11 @@ public class Contract {
     private Customer customer;
     private Contact contact;
 
+    public List<Product> getProductsCheaperThanX(List<Product> products, double x) {
+        return products.stream()
+                .filter(product -> product.getPrice() < x)
+                .collect(Collectors.toList());
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
