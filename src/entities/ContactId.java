@@ -1,18 +1,17 @@
 package entities;
 
 import enums.ContactType;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContactId implements Serializable {
     private int id;
     private ContactType type;
-
-    public ContactId(int id, ContactType type) {
-        this.id = id;
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {

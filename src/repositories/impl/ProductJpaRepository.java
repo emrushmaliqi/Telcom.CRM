@@ -25,17 +25,8 @@ import java.util.logging.Logger;
 public class ProductJpaRepository implements ProductRepository {
 
     private ProductMapper mapper = new ProductMapper();
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
-    public ProductJpaRepository() {
-        try {
-            Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(ProductData.class).buildSessionFactory();
-        }
-        catch (HibernateException e) {
-            throw new CustomerException(e);
-        }
-    }
     @Override
     public void create(Product product) {
         try(Session session = sessionFactory.openSession()) {

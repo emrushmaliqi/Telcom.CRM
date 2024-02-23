@@ -23,13 +23,11 @@ import java.util.List;
 })
 public class CustomerData {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Enumerated(value = EnumType.STRING)
     private CustomerType type;
 
-    @Column
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
@@ -37,10 +35,9 @@ public class CustomerData {
     private State state;
 
     @OneToOne
-    @JoinColumn(name = "contact_id")
     private ContactData contact;
 
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "customer")
     private List<ContractData> contracts;
 }

@@ -14,19 +14,17 @@ import java.util.stream.Collectors;
 
 public class SubscriptionMapper {
 
-    private ContactMapper contactMapper;
-    private ProductMapper productMapper;
+    private static ContactMapper contactMapper = new ContactMapper();
+    private static ProductMapper productMapper = new ProductMapper();
+    private  static ContractMapper contractMapper = new ContractMapper();
 
-    public SubscriptionMapper() {
-        contactMapper = new ContactMapper();
-        productMapper = new ProductMapper();
-    }
 
     public SubscriptionData toSubscriptionData(Subscription subscription) {
         ContactData contactData = contactMapper.toContactData(subscription.getContact());
+        ContractData contractData = contractMapper.toContractData(subscription.getContract());
         List<ProductData> productDataList = productMapper.toProductData(subscription.getProducts());
 
-        return new SubscriptionData(subscription.getId(), subscription.getPhoneNumber(), subscription.getCreatedDate(), subscription.getState(),productDataList, contactData);
+        return new SubscriptionData(subscription.getId(), subscription.getPhoneNumber(), subscription.getCreatedDate(), subscription.getState(), contractData,productDataList, subscription.getServiceTypes(), contactData);
     }
 
     public List<SubscriptionData> toSubscriptionData(List<Subscription> subscriptionList) {
@@ -35,9 +33,10 @@ public class SubscriptionMapper {
 
     public Subscription fromSubscriptionData(SubscriptionData sd) {
         Contact contact = contactMapper.fromContactData(sd.getContact());
+        Contract contract = contractMapper.fromContractData(sd.getContract());
         List<Product> productDataList = productMapper.fromProductData(sd.getProducts());
 
-        return new Subscription(sd.getId(), sd.getPhoneNumber(), sd.getCreatedDate(), sd.getState(), productDataList, contact);
+        return new Subscription(sd.getId(), sd.getPhoneNumber(), sd.getCreatedDate(), sd.getState(), contract, productDataList, sd.getServiceTypes(), contact);
 
     }
 

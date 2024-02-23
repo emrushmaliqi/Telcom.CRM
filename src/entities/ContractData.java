@@ -13,7 +13,6 @@ import java.util.List;
 @Table(name = "CONTRACT")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @NamedQueries({
         @NamedQuery(name = "ContractData.findById", query = "SELECT c FROM ContractData c WHERE c.id = :id"),
         @NamedQuery(name = "ContractData.findAll", query = "SELECT c FROM ContractData c")
@@ -25,21 +24,18 @@ public class ContractData {
     @Enumerated(value = EnumType.STRING)
     private ContractType type;
 
-    @Column
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
     @Enumerated(value = EnumType.ORDINAL)
     private State state;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "contract")
     private List<SubscriptionData> subscriptions;
 
     @ManyToOne
-    @JoinColumn(name = "id")
     private CustomerData customer;
 
     @OneToOne
-    @JoinColumn(name = "contact_id")
     private ContactData contact;
 }

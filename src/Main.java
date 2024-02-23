@@ -1,9 +1,13 @@
+import enums.ContactType;
 import enums.ContractType;
 import enums.CustomerType;
 import enums.State;
 import models.Contract;
 import models.Customer;
 import models.Subscription;
+import models.contacts.BusinessContact;
+import models.contacts.Contact;
+import models.contacts.IndividualContact;
 import repositories.ContractRepository;
 import repositories.CustomerRepository;
 import repositories.SubscriptionRepository;
@@ -14,21 +18,21 @@ import services.TelecomService;
 import services.impl.TelecomServiceImpl;
 
 
+import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 
 // Products field added to Service
 public class Main {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final TelecomService service = new TelecomServiceImpl();
+
+    private static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) throws ParseException {
 
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("Welcome to Telecom Service Management System");
@@ -79,31 +83,35 @@ public class Main {
                     System.out.println("Enter customer id:");
                     int customerId = scanner.nextInt();
 
+                    scanner.nextLine(); // Consume newline
 
-                    System.out.println("Enter customer type:");
+                    System.out.println("Enter customer type: y for INDIVIDUAL, anything for BUSINESS");
                     String customerTypeInput = scanner.nextLine().toUpperCase();
 
-                    // Directly set the customer type enum using valueOf method
-                    CustomerType customerType;
+                    CustomerType customerType = customerTypeInput.equals("Y") ? CustomerType.INDIVIDUAL : CustomerType.BUSINESS;
 
-                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-                    String inputDate = scanner.nextLine();
-                    Date createdDate = dateFormat.parse(inputDate);
 
-                    System.out.println("Enter customer state:");
+
+//                    System.out.println("Enter customer created date (YYYY-MM-DD):");
+//                    String inputDate = scanner.nextLine();
+//                    Date createdDate = dateFormat.parse(inputDate);
+
+                    System.out.println("Enter customer state: ACTIVE or INACTIVE or DEACTIVE");
                     String stateInput = scanner.nextLine().toUpperCase();
 
                     // Directly set the state enum using valueOf method
                     State state;
                     try {
                         state = State.valueOf(stateInput);
-                        customerType = CustomerType.valueOf(customerTypeInput);
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid state input!");
                         return; //  input is invalid
                     }
 
-                    Customer customer = new Customer(customerId,customerType ,createdDate, state, null, null);
+                    Customer customer = new Customer(customerId,customerType ,new Date(), state, null, new ArrayList<>());
+                    Contact contact = createContact(customer);
+                    customer.setContact(contact);
+                    service.createContact(contact);
                     service.createCustomer(customer);
                     System.out.println("Customer created successfully!");
                     break;
@@ -155,9 +163,6 @@ public class Main {
                     }
                     break;
 
-// hala nuk e kom analizu mir kshtu qe qetash pe kqyri kapak edhe di qka met than besoj
-
-                // oki
                 case 5:
                     // Implement list all customers functionality
                     Optional<List<Customer>> customersOptional = service.findAllCustomers();
@@ -309,7 +314,7 @@ public class Main {
                     System.out.println("Enter subscription state:");
                     State state = State.valueOf(scanner.nextLine().toUpperCase());
 
-                    Subscription subscription = new Subscription(subscriptionId,phoneNumber, createdDate, state, null, null);
+                    Subscription subscription = new Subscription(subscriptionId,phoneNumber, createdDate, state,null, null, null);
                     service.createSubscription(subscription);
                     System.out.println("Subscription created successfully!");
                     break;
@@ -373,11 +378,41 @@ public class Main {
                     }
                     break;
                 case 6:
-                    return; // Return to main menu
+                    return;
 
             }
         }
+    }
 
+    public static Contact createContact(Customer customer) {
+        if(customer.getType() == CustomerType.INDIVIDUAL) {
+            System.out.println("Enter contact first name: ");
+            String name = scanner.nextLine();
+
+            System.out.println("Enter contact last name: ");
+            String lastName = scanner.nextLine();
+            // add dob
+            Date dob;
+
+            System.out.println("Enter customer date of birth (YYYY-MM-DD):");
+            String inputDate = scanner.nextLine();
+            while(true) {
+                try {
+                    dob = dateFormat.parse(inputDate);
+                    break;
+                }
+                catch (ParseException e) {
+                    System.out.println("Invalid date format. Please enter the date in the format YYYY-MM-DD: ");
+                    inputDate = scanner.nextLine();
+                }
+            }
+            return new IndividualContact(customer.getId(), ContactType.CU, new Date(), customer.getState(),name, lastName, dob);
+        }
+
+        System.out.println("Enter contact customer name: ");
+
+        String customerName = scanner.nextLine();
+        return new BusinessContact(customer.getId(), ContactType.CU, new Date(), customer.getState(), customerName);
     }
 }
 

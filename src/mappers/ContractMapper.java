@@ -13,16 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ContractMapper {
-    private ContactMapper contactMapper;
-    private SubscriptionMapper subscriptionMapper;
-
-    private CustomerMapper customerMapper;
-
-    public ContractMapper() {
-        contactMapper = new ContactMapper();
-        subscriptionMapper = new SubscriptionMapper();
-        customerMapper = new CustomerMapper();
-    }
+    private static ContactMapper contactMapper = new ContactMapper();
+    private static SubscriptionMapper subscriptionMapper = new SubscriptionMapper();
+    private static CustomerMapper customerMapper = new CustomerMapper();
 
     public ContractData toContractData(Contract contract) {
         ContactData contactData = contactMapper.toContactData(contract.getContact());

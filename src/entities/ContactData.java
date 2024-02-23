@@ -3,9 +3,7 @@ package entities;
 import enums.ContactType;
 import enums.State;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -42,5 +40,6 @@ public class ContactData {
     @Column
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
+
 }
 

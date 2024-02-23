@@ -3,10 +3,13 @@ package services.impl;
 import models.Contract;
 import models.Customer;
 import models.Subscription;
+import models.contacts.Contact;
+import repositories.ContactRepository;
 import repositories.ContractRepository;
 import repositories.CustomerRepository;
 import repositories.SubscriptionRepository;
 import repositories.factories.RepositoryFactory;
+import repositories.impl.ContactJpaRepository;
 import repositories.impl.ContractJpaRepository;
 import repositories.impl.CustomerJpaRepository;
 import repositories.impl.SubscriptionJpaRepository;
@@ -19,6 +22,8 @@ public class TelecomServiceImpl implements TelecomService {
     private CustomerRepository customerRepository = new CustomerJpaRepository();;
     private ContractRepository contractRepository = new ContractJpaRepository();;
     private SubscriptionRepository subscriptionRepository = new SubscriptionJpaRepository();
+
+    private ContactRepository contactRepository = new ContactJpaRepository();
 
     public TelecomServiceImpl() {
 //        customerRepository = RepositoryFactory.getRepository(CustomerJpaRepository.class);
@@ -99,5 +104,10 @@ public class TelecomServiceImpl implements TelecomService {
     @Override
     public Optional<List<Subscription>> findAllSubscriptions() {
         return subscriptionRepository.findAll();
+    }
+
+    @Override
+    public void createContact(Contact contact) {
+        contactRepository.create(contact);
     }
 }

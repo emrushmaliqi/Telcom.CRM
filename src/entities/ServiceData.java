@@ -19,18 +19,12 @@ public class ServiceData {
     @Id
     private long id;
 
-
-    @Column
     private double data;
 
-
-    @Column
     private int minutes;
 
-    @Column
     private int messages;
 
-    @Column
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 

@@ -1,5 +1,6 @@
 package repositories.impl;
 
+import entities.ContractData;
 import entities.CustomerData;
 import jakarta.persistence.NoResultException;
 import models.Customer;
@@ -20,17 +21,8 @@ import java.util.logging.Logger;
 
 public class CustomerJpaRepository implements CustomerRepository {
     private CustomerMapper mapper = new CustomerMapper();
-    private SessionFactory sessionFactory;
-    public CustomerJpaRepository() {
-        try {
-            Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(CustomerData.class).buildSessionFactory();
-        }
-        catch (HibernateException e) {
-            throw new CustomerException(e);
-        }
-    }
 
+    private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
     @Override
     public void create(Customer customer) {

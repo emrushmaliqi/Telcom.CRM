@@ -13,19 +13,14 @@ import java.util.stream.Collectors;
 
 public class CustomerMapper {
 
-    private ContactMapper contactMapper;
-    private ContractMapper contractMapper;
-
-    public CustomerMapper() {
-        contactMapper = new ContactMapper();
-        contractMapper = new ContractMapper();
-    }
+    private static ContactMapper contactMapper = new ContactMapper();
+    private static ContractMapper contractMapper = new ContractMapper();
 
     public CustomerData toCustomerData(Customer customer) {
         ContactData contactData = contactMapper.toContactData(customer.getContact());
         List<ContractData> contractDataList = contractMapper.toContractData(customer.getContracts());
 
-        return new CustomerData(customer.getId(), customer.getType(), customer.getCreatedDate(), customer.getState(), contactData, contractDataList);
+        return new CustomerData(customer.getId(), customer.getType(), customer.getCreatedDate(), customer.getState(),contactData,  contractDataList);
     }
 
     public List<CustomerData> toCustomerData(List<Customer> customerList) {

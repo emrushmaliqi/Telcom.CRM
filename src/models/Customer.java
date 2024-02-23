@@ -13,7 +13,6 @@ import java.util.Objects;
 @Getter
 @AllArgsConstructor
 public class Customer {
-    // constructor i krym
 
     @Setter(AccessLevel.NONE)
     private int id;

@@ -1,12 +1,11 @@
 package entities;
 
+import enums.OptionalServiceType;
 import enums.State;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import models.contacts.Contact;
-import models.services.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -25,26 +24,29 @@ public class SubscriptionData {
     @Id
     private int id;
 
-    @Column
     private String phoneNumber;
 
 
-    @Column
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
     @Enumerated(EnumType.ORDINAL)
     private State state;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "SUBSCRIPTION_PRODUCT",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
+    @ManyToOne
+    private ContractData contract;
+
+    @ManyToMany
     private List<ProductData> products;
 
+
+    @ElementCollection
+    @CollectionTable(
+            name = "SUBSCRIPTION_SERVICE_TYPE", joinColumns = @JoinColumn(name = "id"))
+    @Enumerated(EnumType.ORDINAL)
+    private List<OptionalServiceType> serviceTypes;
+
     @OneToOne
-    @JoinColumn(name = "contact_id")
     private ContactData contact;
+
 }

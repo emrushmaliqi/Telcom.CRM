@@ -30,13 +30,10 @@ public class ProductData {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime toDateTime;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "PRODUCT_SERVICE",
-            joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id")
-    )
+    @ManyToMany
     private List<ServiceData> services;
+
+
     @ManyToMany(mappedBy = "products")
     private List<SubscriptionData> subscriptions;
 }

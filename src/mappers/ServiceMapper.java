@@ -10,11 +10,7 @@ import java.util.stream.Collectors;
 
 public class ServiceMapper {
 
-    ProductMapper productMapper;
-
-    public ServiceMapper() {
-        this.productMapper = new ProductMapper();
-    }
+    private static ProductMapper productMapper = new ProductMapper();
 
     public ServiceData toServiceData(Service service) {
         List<ProductData> productDataList = productMapper.toProductData(service.getProducts());

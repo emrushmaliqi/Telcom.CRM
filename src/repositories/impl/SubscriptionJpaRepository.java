@@ -23,17 +23,8 @@ import java.util.logging.Logger;
 public class SubscriptionJpaRepository implements SubscriptionRepository {
     private SubscriptionMapper mapper = new SubscriptionMapper();
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
-    public SubscriptionJpaRepository() {
-        try {
-            Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(SubscriptionData.class).buildSessionFactory();
-        }
-        catch (HibernateException e) {
-            throw new ContractException(e);
-        }
-    }
 
     @Override
     public void create(Subscription subscription) {

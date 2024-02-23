@@ -1,11 +1,13 @@
 package repositories.impl;
 
 import entities.ContractData;
+import entities.CustomerData;
 import exceptions.ContractException;
 import jakarta.persistence.NoResultException;
 import mappers.ContactMapper;
 import mappers.ContractMapper;
 import models.Contract;
+import models.Customer;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,17 +24,8 @@ import java.util.logging.Logger;
 public class ContractJpaRepository implements ContractRepository {
     private ContractMapper mapper = new ContractMapper();
 
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
-    public ContractJpaRepository() {
-        try {
-            Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(ContractData.class).buildSessionFactory();
-        }
-        catch (HibernateException e) {
-            throw new ContractException(e);
-        }
-    }
     @Override
     public void create(Contract type) {
         try(Session session = sessionFactory.openSession()) {

@@ -3,6 +3,7 @@ package services;
 import models.Contract;
 import models.Customer;
 import models.Subscription;
+import models.contacts.Contact;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +34,7 @@ public interface TelecomService {
     Optional<Subscription> findSubscriptionById(int id);
 
     Optional<List<Subscription>> findAllSubscriptions();
+
+
+    void createContact(Contact contact);
 }

@@ -21,17 +21,8 @@ import java.util.logging.Logger;
 public class ServiceJpaRepository implements ServiceRepository {
 
     private ServiceMapper mapper = new ServiceMapper();
-    private SessionFactory sessionFactory;
+    private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
-    public ServiceJpaRepository() {
-        try {
-            Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
-            sessionFactory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(ServiceData.class).buildSessionFactory();
-        }
-        catch (HibernateException e) {
-            throw new ServiceException(e);
-        }
-    }
     @Override
     public void create(Service service) {
         try(Session session = sessionFactory.openSession()) {
