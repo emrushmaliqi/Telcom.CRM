@@ -2,6 +2,7 @@ package repositories.impl;
 
 import entities.CustomerData;
 import entities.ProductData;
+import entities.SubscriptionData;
 import exceptions.CustomerException;
 import exceptions.ProductException;
 import jakarta.persistence.NoResultException;
@@ -9,6 +10,7 @@ import mappers.CustomerMapper;
 import mappers.ProductMapper;
 import models.Customer;
 import models.Product;
+import models.Subscription;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +18,8 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import repositories.ProductRepository;
 
+import javax.print.attribute.standard.MediaSize;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,4 +114,38 @@ public class ProductJpaRepository implements ProductRepository {
         }
         return productList;
     }
+
+    @Override
+    public Optional<List<Product>> findCheaperThanX(double price) {
+        Optional<List<Product>> productList;
+        try(Session session = sessionFactory.openSession()) {
+            List<ProductData> resultList = session.createNamedQuery("ProductData.findCheaperThanX", ProductData.class)
+                    .setParameter("price", price)
+                    .getResultList();
+            productList = Optional.ofNullable(mapper.fromProductData(resultList));
+        }
+        catch (HibernateException e) {
+            throw new ProductException(e);
+        }
+
+        return productList;
+    }
+
+    @Override
+    public Optional<List<Product>> findExpiringInXDays(int days) {
+        Optional<List<Product>> productList;
+        try(Session session = sessionFactory.openSession()) {
+            List<ProductData> resultList = session.createNamedQuery("ProductData.findExpiringInXDays", ProductData.class)
+                    .setParameter("days", LocalDateTime.now().plusDays(days))
+                    .getResultList();
+            productList = Optional.ofNullable(mapper.fromProductData(resultList));
+        }
+        catch (HibernateException e) {
+            throw new ProductException(e);
+        }
+
+        return productList;
+    }
+
+
 }

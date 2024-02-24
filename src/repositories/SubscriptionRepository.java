@@ -1,7 +1,11 @@
 package repositories;
 
+import models.Product;
 import models.Subscription;
 
-public interface SubscriptionRepository extends Repository<Subscription> {
+import java.util.List;
+import java.util.Optional;
 
+public interface SubscriptionRepository extends Repository<Subscription> {
+    Optional<List<Subscription>> findSubscribersForProduct(Product product);
 }

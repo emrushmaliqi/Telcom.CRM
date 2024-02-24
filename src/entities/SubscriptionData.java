@@ -17,7 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @NamedQueries({
         @NamedQuery(name = "SubscriptionData.findById", query = "SELECT s FROM SubscriptionData s WHERE s.id = :id"),
-        @NamedQuery(name = "SubscriptionData.findAll", query = "SELECT s FROM SubscriptionData s")
+        @NamedQuery(name = "SubscriptionData.findAll", query = "SELECT s FROM SubscriptionData s"),
+        @NamedQuery(name = "SubscriptionData.findSubscribersForProduct", query = "SELECT s FROM SubscriptionData s")
 })
 public class SubscriptionData {
 

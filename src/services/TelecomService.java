@@ -40,4 +40,10 @@ public interface TelecomService {
     void createContact(Contact contact);
 
     Optional<List<Product>> findAllProducts();
+
+    Optional<List<Product>> findProductsCheaperThanX(int price);
+
+    Optional<List<Product>> findProductsExpiringInXDays(int days);
+
+    Optional<List<Subscription>> findSubscribersForProduct(Product product);
 }

@@ -1,5 +1,3 @@
-import Seeders.Seeder;
-import entities.ProductData;
 import enums.*;
 import models.Contract;
 import models.Customer;
@@ -12,18 +10,10 @@ import models.services.Data;
 import models.services.SimCard;
 import models.services.Sms;
 import models.services.Voice;
-import repositories.ContractRepository;
-import repositories.CustomerRepository;
-import repositories.SubscriptionRepository;
-import repositories.impl.ContractJpaRepository;
-import repositories.impl.CustomerJpaRepository;
-import repositories.impl.SubscriptionJpaRepository;
 import services.TelecomService;
 import services.impl.TelecomServiceImpl;
 
 
-import javax.swing.text.html.Option;
-import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,7 +35,8 @@ public class Main {
             System.out.println("1. Customer Operations");
             System.out.println("2. Contract Operations");
             System.out.println("3. Subscription Operations");
-            System.out.println("4. Exit");
+            System.out.println("4. Filter Operations");
+            System.out.println("5. Exit");
 
             int option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -62,6 +53,8 @@ public class Main {
                         subscriptionOperationsMenu(scanner);
                         break;
                     case 4:
+                        filterOperations(scanner);
+                    case 5:
                         System.out.println("Exiting... Goodbye!");
                         return;
                     default:
@@ -69,6 +62,37 @@ public class Main {
                 }
             } catch (ParseException e) {
                 System.out.println("Something went wrong!");
+            }
+        }
+    }
+
+    private static void filterOperations(Scanner scanner) {
+        while (true) {
+            System.out.println("1. Filter by cheaper than 5 euro");
+            System.out.println("2. Filter subscribers that have purchased a specific product");
+            System.out.println("3. Filter products that will expire in the next x (parameter) days");
+            System.out.println("4. Back to Main Menu");
+
+            int option = scanner.nextInt();
+
+            scanner.nextLine();
+            switch (option) {
+                case 1:
+                    Optional<List<Product>> products = service.findProductsCheaperThanX(5);
+                    products.ifPresent(productList -> productList.forEach(System.out::println));
+                    break;
+                case 2:
+                    System.out.println("Work in progress...");
+                    break;
+                case 3:
+                    Optional<List<Product>> productList = service.findProductsExpiringInXDays(20);
+                    productList.ifPresent(products1-> products1.forEach(System.out::println));
+                    break;
+                case 4:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+
             }
         }
     }
@@ -82,14 +106,11 @@ public class Main {
             System.out.println("4. Find Customer by ID");
             System.out.println("5. List All Customers");
             System.out.println("6. Back to Main Menu");
-            // To do
-            // Option to add contracts to customer
 
             int option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
             switch (option) {
-
                 case 1:
                 int customerId;
                     // create customer
@@ -114,15 +135,10 @@ public class Main {
                     String customerTypeInput = scanner.nextLine().toUpperCase();
 
                     CustomerType customerType = customerTypeInput.equals("Y") ? CustomerType.INDIVIDUAL : CustomerType.BUSINESS;
-//                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-//                    String inputDate = scanner.nextLine();
-//                    Date createdDate = dateFormat.parse(inputDate);
-
 
                     System.out.println("Enter customer state: ACTIVE or INACTIVE or DEACTIVE");
                     String stateInput = scanner.nextLine().toUpperCase();
 
-                    // Directly set the state enum using valueOf method
                     State state;
                     try {
                         state = State.valueOf(stateInput);
@@ -141,7 +157,16 @@ public class Main {
                 case 2:
                     // update customer
                     System.out.println("Enter customer ID to update:");
-                    int customerIdToUpdate = scanner.nextInt();
+                    int customerIdToUpdate;
+
+                    try {
+                        customerIdToUpdate = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     Optional<Customer> optionalCustomer = service.findCustomerById(customerIdToUpdate);
                     scanner.nextLine(); // Consume newline
                     if(!optionalCustomer.isPresent())
@@ -167,7 +192,15 @@ public class Main {
                 case 3:
                     // Implement delete customer functionality
                     System.out.println("Enter customer ID to delete:");
-                    int customerIdToDelete = scanner.nextInt();
+                    int customerIdToDelete;
+                    try {
+                        customerIdToDelete = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
 
@@ -179,7 +212,16 @@ public class Main {
                 case 4:
                     // Implement find customer by ID functionality
                     System.out.println("Enter customer ID to find:");
-                    int customerIdToFind = scanner.nextInt();
+                    int customerIdToFind;
+                    try {
+                        customerIdToFind = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
                     scanner.nextLine(); // Consume newline
 
                     Optional<Customer> foundCustomer = service.findCustomerById(customerIdToFind);
@@ -191,7 +233,6 @@ public class Main {
                     break;
 
                 case 5:
-                    // Implement list all customers functionality
                     Optional<List<Customer>> customersOptional = service.findAllCustomers();
                     if (customersOptional.isPresent()) {
                         List<Customer> customers = customersOptional.get(); // Extract the list from Optional
@@ -227,7 +268,15 @@ public class Main {
                 case 1:
                     //create contract
                     System.out.print("Enter contract id: ");
-                    int contractId = scanner.nextInt();
+                    int contractId;
+                    try {
+                        contractId = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
                     if(service.findCustomerById(contractId).isPresent()) {
@@ -253,12 +302,6 @@ public class Main {
 
                     ContractType contractType = contractTypeInput.equals("Y") ? ContractType.PREPAID : ContractType.POSTPAID;
 
-//                    CustomerType contractType = ContractType.equals("Y") ? CustomerType.INDIVIDUAL : CustomerType.BUSINESS;
-
-///                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-//                    String inputDate = scanner.nextLine();
-///                    Date createdDate = dateFormat.parse(inputDate);
-
                     System.out.println("Enter customer state: ACTIVE or INACTIVE or DEACTIVE");
                     String stateInput = scanner.nextLine().toUpperCase();
                     State state;
@@ -269,7 +312,6 @@ public class Main {
                         return; //  input is invalid
                     }
 
-
                     Contract contract = new Contract(contractId,contractType, new Date(), state, new ArrayList<>(), customer, null);
                     Contact contact = createContact(contract);
                     contract.setContact(contact);
@@ -279,8 +321,17 @@ public class Main {
                 case 2:
                     //update contract
                     System.out.println("Enter contract ID to update:");
-                    int contractIdToUpdate = scanner.nextInt();
+                    int contractIdToUpdate;
+                    try {
+                        contractIdToUpdate = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
+
                     Optional<Contract> optionalContract = service.findContractById(contractIdToUpdate);
                     if(!optionalContract.isPresent()) {
                         System.out.println("Contract not found!");
@@ -315,7 +366,15 @@ public class Main {
                 case 3:
                     // delete contract
                     System.out.println("Enter contract ID to delete:");
-                    int contractIdToDelete = scanner.nextInt();
+                    int contractIdToDelete;
+                    try {
+                        contractIdToDelete = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
                     System.out.printf("Contract deleted %s!%n", service.deleteContractById(contractIdToDelete) ? "succesfuly" : "failed");
@@ -323,7 +382,16 @@ public class Main {
                 case 4:
                     // find contract
                     System.out.println("Enter contract ID to find:");
-                    int contractIdToFind = scanner.nextInt();
+                    int contractIdToFind;
+
+                    try {
+                        contractIdToFind = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
 
@@ -415,14 +483,10 @@ public class Main {
                     System.out.print("Enter phone number (+3834(4|5|6){1-9}xxxxx): ");
                     String phoneNumber = scanner.nextLine();
 
-//                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-//                    String inputDate = scanner.nextLine();
-//                    Date createdDate = dateFormat.parse(inputDate);
 
                     System.out.println("Enter subscription state: ACTIVE or INACTIVE or DEACTIVE");
                     String stateInput = scanner.nextLine().toUpperCase();
 
-                    // Directly set the state enum using valueOf method
                     State state;
                     try {
                         state = State.valueOf(stateInput);

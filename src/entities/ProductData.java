@@ -16,7 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @NamedQueries({
         @NamedQuery(name = "ProductData.findById", query = "SELECT p FROM ProductData p WHERE p.id = :id"),
-        @NamedQuery(name = "ProductData.findAll", query = "SELECT p FROM ProductData p")
+        @NamedQuery(name = "ProductData.findAll", query = "SELECT p FROM ProductData p"),
+        @NamedQuery(name = "ProductData.findCheaperThanX", query = "SELECT p FROM ProductData p WHERE p.price < :price"),
+        @NamedQuery(name = "ProductData.findExpiringInXDays", query = "SELECT p FROM ProductData p WHERE :days < p.toDateTime")
 })
 public class ProductData {
 

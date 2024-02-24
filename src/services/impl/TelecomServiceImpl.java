@@ -6,7 +6,6 @@ import models.Product;
 import models.Subscription;
 import models.contacts.Contact;
 import repositories.*;
-import repositories.factories.RepositoryFactory;
 import repositories.impl.*;
 import services.TelecomService;
 
@@ -21,12 +20,6 @@ public class TelecomServiceImpl implements TelecomService {
     private ContactRepository contactRepository = new ContactJpaRepository();
 
     private ProductRepository  productRepository = new ProductJpaRepository();
-
-    public TelecomServiceImpl() {
-//        customerRepository = RepositoryFactory.getRepository(CustomerJpaRepository.class);
-//        contractRepository = RepositoryFactory.getRepository(ContractJpaRepository.class);
-//        subscriptionRepository = RepositoryFactory.getRepository(SubscriptionJpaRepository.class);
-    }
 
     @Override
     public void createCustomer(Customer customer) {
@@ -110,5 +103,20 @@ public class TelecomServiceImpl implements TelecomService {
 
     public Optional<List<Product>> findAllProducts() {
         return productRepository.findAll();
+    }
+
+    @Override
+    public Optional<List<Product>> findProductsCheaperThanX(int price) {
+        return productRepository.findCheaperThanX(price);
+    }
+
+    @Override
+    public Optional<List<Product>> findProductsExpiringInXDays(int days) {
+        return productRepository.findExpiringInXDays(days);
+    }
+
+    @Override
+    public Optional<List<Subscription>> findSubscribersForProduct(Product product) {
+        return subscriptionRepository.findSubscribersForProduct(product);
     }
 }

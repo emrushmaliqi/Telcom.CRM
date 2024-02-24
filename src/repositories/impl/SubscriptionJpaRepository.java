@@ -6,6 +6,7 @@ import exceptions.ContractException;
 import exceptions.SubscriptionException;
 import jakarta.persistence.NoResultException;
 import mappers.SubscriptionMapper;
+import models.Product;
 import models.Subscription;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -109,6 +110,23 @@ public class SubscriptionJpaRepository implements SubscriptionRepository {
         catch(HibernateException e) {
             throw new SubscriptionException(e);
         }
+        return subscriptionList;
+    }
+
+    @Override
+    public Optional<List<Subscription>> findSubscribersForProduct(Product product) {
+        Optional<List<Subscription>> subscriptionList;
+        try(Session session = sessionFactory.openSession()) {
+            List<SubscriptionData> resultList = session.createNamedQuery("SubscriptionData.findSubscribersForProduct", SubscriptionData.class)
+                    .setParameter("product_id", product.getId())
+                    .getResultList();
+
+            subscriptionList = Optional.ofNullable(mapper.fromSubscriptionData(resultList));
+        }
+        catch (HibernateException e) {
+            throw new SubscriptionException(e);
+        }
+
         return subscriptionList;
     }
 }
