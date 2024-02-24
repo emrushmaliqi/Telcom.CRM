@@ -34,7 +34,7 @@ public class CustomerData {
     @Enumerated(value = EnumType.ORDINAL)
     private State state;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ContactData contact;
 
 

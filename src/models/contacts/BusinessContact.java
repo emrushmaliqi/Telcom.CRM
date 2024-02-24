@@ -16,4 +16,9 @@ public class BusinessContact extends Contact{
         super(id, idType, createdDate, state);
         this.customerName = customerName;
     }
+
+    @Override
+    public String toString(){
+        return "Business Contact id=" + getId() + ", type=" + getType() + ", createdDate=" + getCreatedDate() + ", state=" + getState() + ", customerName='" + customerName;
+    }
 }

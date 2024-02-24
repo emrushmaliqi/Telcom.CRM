@@ -22,6 +22,10 @@ public class Customer {
     private Contact contact;
     private List<Contract> contracts;
 
+    @Override
+    public String toString(){
+        return "Customer has id=" + id + ", type=" + type + ", createdDate=" + createdDate + ", state=" + state + ", contact=" + contact + ", contracts=" + contracts;
+    }
 
     @Override
     public boolean equals(Object o) {

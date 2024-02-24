@@ -33,7 +33,7 @@ public class SubscriptionMapper {
 
     public Subscription fromSubscriptionData(SubscriptionData sd) {
         Contact contact = contactMapper.fromContactData(sd.getContact());
-        Contract contract = contractMapper.fromContractData(sd.getContract());
+        Contract contract = contractMapper.fromContractData(sd.getContract(), false);
         List<Product> productDataList = productMapper.fromProductData(sd.getProducts());
 
         return new Subscription(sd.getId(), sd.getPhoneNumber(), sd.getCreatedDate(), sd.getState(), contract, productDataList, sd.getServiceTypes(), contact);

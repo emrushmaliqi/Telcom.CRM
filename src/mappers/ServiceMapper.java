@@ -5,6 +5,7 @@ import entities.ServiceData;
 import models.Product;
 import models.services.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,8 @@ public class ServiceMapper {
     private static ProductMapper productMapper = new ProductMapper();
 
     public ServiceData toServiceData(Service service) {
-        List<ProductData> productDataList = productMapper.toProductData(service.getProducts());
+//        List<ProductData> productDataList = productMapper.toProductData(service.getProducts());
+        List<ProductData> productDataList = new ArrayList<>();
         if(service.getType().getClass() == Voice.class) {
             Voice voice = (Voice) service.getType();
             return new ServiceData(service.getId(), -1, voice.getMinutes(), -1,  service.getCreatedDate(), service.getState(), productDataList);
@@ -36,7 +38,8 @@ public class ServiceMapper {
     }
 
     public Service fromServiceData(ServiceData serviceData) {
-        List<Product> productList = productMapper.fromProductData(serviceData.getProducts());
+//        List<Product> productList = productMapper.fromProductData(serviceData.getProducts());
+        List<Product> productList = new ArrayList<>();
         if(serviceData.getMinutes() != -1) {
             Voice voice = new Voice(serviceData.getMinutes());
             return new Service(serviceData.getId(), voice, serviceData.getCreatedDate(), serviceData.getState(), productList);

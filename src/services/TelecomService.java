@@ -2,6 +2,7 @@ package services;
 
 import models.Contract;
 import models.Customer;
+import models.Product;
 import models.Subscription;
 import models.contacts.Contact;
 
@@ -37,4 +38,6 @@ public interface TelecomService {
 
 
     void createContact(Contact contact);
+
+    Optional<List<Product>> findAllProducts();
 }

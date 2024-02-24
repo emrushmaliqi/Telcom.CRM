@@ -4,6 +4,7 @@ import entities.*;
 import entities.ContactData;
 import entities.ContactData;
 import entities.ContactData;
+import enums.ContactType;
 import exceptions.ContactException;
 import exceptions.ContactException;
 import exceptions.ContactException;
@@ -58,15 +59,17 @@ public class ContactJpaRepository implements ContactRepository {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) { return false; }
+
+    @Override
+    public boolean deleteById(int id, ContactType type) {
         try(Session session = sessionFactory.openSession()) {
             ContactData contactData = session.createNamedQuery("ContactData.findById", ContactData.class)
                     .setParameter("id", id)
+                    .setParameter("type", type)
                     .getSingleResult();
             if(Objects.nonNull(contactData)) {
-                Transaction trx = session.getTransaction();;
                 session.remove(contactData);
-                trx.commit();
                 return true;
             }
             return false;
@@ -80,7 +83,7 @@ public class ContactJpaRepository implements ContactRepository {
     }
 
     @Override
-    public Optional<Contact> findById(int id) {
+    public Optional<Contact> findById(int id, ContactType type) {
         Optional<Contact> contact;
         try(Session session = sessionFactory.openSession()) {
             ContactData contactData = session.createNamedQuery("ContactData.findById", ContactData.class)
@@ -96,6 +99,9 @@ public class ContactJpaRepository implements ContactRepository {
         }
         return contact;
     }
+
+    @Override
+    public Optional<Contact> findById(int id) { return Optional.empty();}
 
     @Override
     public Optional<List<Contact>> findAll() {

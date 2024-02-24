@@ -64,9 +64,9 @@ public class ContractJpaRepository implements ContractRepository {
                     .setParameter("id", id)
                     .getSingleResult();
             if(Objects.nonNull(contractData)) {
-                Transaction trx = session.getTransaction();
+                session.beginTransaction();
                 session.remove(contractData);
-                trx.commit();
+                session.getTransaction().commit();
                 return true;
             }
             return false;
@@ -86,7 +86,7 @@ public class ContractJpaRepository implements ContractRepository {
             ContractData contractData = session.createNamedQuery("ContractData.findById", ContractData.class)
                     .setParameter("id", id)
                     .getSingleResult();
-            contract = Optional.ofNullable(mapper.fromContractData(contractData));
+            contract = Optional.ofNullable(mapper.fromContractData(contractData, true));
         }
         catch (NoResultException e) {
             return Optional.empty();

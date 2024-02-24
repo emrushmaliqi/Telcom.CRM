@@ -13,6 +13,10 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "ContactData.findById", query = "SELECT c FROM ContactData c WHERE c.id = :id AND c.type = :type"),
+        @NamedQuery(name = "ContactData.findAll", query = "SELECT c FROM ContactData c")
+})
 public class ContactData {
     @Id
     private int id;

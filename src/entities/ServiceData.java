@@ -15,9 +15,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "ServiceData.findById", query = "SELECT s FROM ServiceData s WHERE s.id = :id"),
+        @NamedQuery(name = "ServiceData.findAll", query = "SELECT s FROM ServiceData s")
+})
 public class ServiceData {
     @Id
-    private long id;
+    private int id;
 
     private double data;
 

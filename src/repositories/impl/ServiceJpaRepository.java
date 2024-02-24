@@ -62,9 +62,7 @@ public class ServiceJpaRepository implements ServiceRepository {
                     .getSingleResult();
 
             if(Objects.nonNull(serviceData)) {
-                Transaction trx = session.getTransaction();;
                 session.remove(serviceData);
-                trx.commit();
                 return true;
             }
             return false;

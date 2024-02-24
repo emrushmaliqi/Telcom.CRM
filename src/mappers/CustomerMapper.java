@@ -7,6 +7,7 @@ import models.Contract;
 import models.Customer;
 import models.contacts.Contact;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,13 +28,13 @@ public class CustomerMapper {
         return customerList.stream().map(this::toCustomerData).collect(Collectors.toList());
     }
 
-    public Customer fromCustomerData(CustomerData cd) {
+    public Customer fromCustomerData(CustomerData cd, boolean includeData) {
         Contact contact = contactMapper.fromContactData(cd.getContact());
-        List<Contract> contractList = contractMapper.fromContractData(cd.getContracts());
+        List<Contract> contractList = includeData ? contractMapper.fromContractData(cd.getContracts()) : new ArrayList<>();
         return new Customer(cd.getId(), cd.getType(), cd.getCreatedDate(), cd.getState(), contact, contractList);
     }
 
     public List<Customer> fromCustomerData(List<CustomerData> customerDataList) {
-        return customerDataList.stream().map(this::fromCustomerData).collect(Collectors.toList());
+        return customerDataList.stream().map(x -> fromCustomerData(x, false)).collect(Collectors.toList());
     }
 }

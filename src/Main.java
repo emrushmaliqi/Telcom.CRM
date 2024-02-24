@@ -1,13 +1,17 @@
-import enums.ContactType;
-import enums.ContractType;
-import enums.CustomerType;
-import enums.State;
+import Seeders.Seeder;
+import entities.ProductData;
+import enums.*;
 import models.Contract;
 import models.Customer;
+import models.Product;
 import models.Subscription;
 import models.contacts.BusinessContact;
 import models.contacts.Contact;
 import models.contacts.IndividualContact;
+import models.services.Data;
+import models.services.SimCard;
+import models.services.Sms;
+import models.services.Voice;
 import repositories.ContractRepository;
 import repositories.CustomerRepository;
 import repositories.SubscriptionRepository;
@@ -18,10 +22,12 @@ import services.TelecomService;
 import services.impl.TelecomServiceImpl;
 
 
+import javax.swing.text.html.Option;
 import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 // Products field added to Service
@@ -32,7 +38,6 @@ public class Main {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws ParseException {
-
 
         while (true) {
             System.out.println("Welcome to Telecom Service Management System");
@@ -45,21 +50,25 @@ public class Main {
             int option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
-            switch (option) {
-                case 1:
-                    customerOperationsMenu(scanner);
-                    break;
-                case 2:
-                    contractOperationsMenu(scanner);
-                    break;
-                case 3:
-                    subscriptionOperationsMenu(scanner);
-                    break;
-                case 4:
-                    System.out.println("Exiting... Goodbye!");
-                    return;
-                default:
-                    System.out.println("Invalid option. Please try again.");
+            try {
+                switch (option) {
+                    case 1:
+                        customerOperationsMenu(scanner);
+                        break;
+                    case 2:
+                        contractOperationsMenu(scanner);
+                        break;
+                    case 3:
+                        subscriptionOperationsMenu(scanner);
+                        break;
+                    case 4:
+                        System.out.println("Exiting... Goodbye!");
+                        return;
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (ParseException e) {
+                System.out.println("Something went wrong!");
             }
         }
     }
@@ -73,15 +82,31 @@ public class Main {
             System.out.println("4. Find Customer by ID");
             System.out.println("5. List All Customers");
             System.out.println("6. Back to Main Menu");
+            // To do
+            // Option to add contracts to customer
 
             int option = scanner.nextInt();
             scanner.nextLine(); // Consume newline
 
             switch (option) {
+
                 case 1:
+                int customerId;
                     // create customer
                     System.out.println("Enter customer id:");
-                    int customerId = scanner.nextInt();
+                    try {
+                        customerId = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
+                    if(service.findCustomerById(customerId).isPresent()) {
+                        System.out.println("Customer already exists!");
+                        return; // customer already exists
+                    }
 
                     scanner.nextLine(); // Consume newline
 
@@ -89,12 +114,10 @@ public class Main {
                     String customerTypeInput = scanner.nextLine().toUpperCase();
 
                     CustomerType customerType = customerTypeInput.equals("Y") ? CustomerType.INDIVIDUAL : CustomerType.BUSINESS;
-
-
-
 //                    System.out.println("Enter customer created date (YYYY-MM-DD):");
 //                    String inputDate = scanner.nextLine();
 //                    Date createdDate = dateFormat.parse(inputDate);
+
 
                     System.out.println("Enter customer state: ACTIVE or INACTIVE or DEACTIVE");
                     String stateInput = scanner.nextLine().toUpperCase();
@@ -108,10 +131,10 @@ public class Main {
                         return; //  input is invalid
                     }
 
+
                     Customer customer = new Customer(customerId,customerType ,new Date(), state, null, new ArrayList<>());
                     Contact contact = createContact(customer);
                     customer.setContact(contact);
-                    service.createContact(contact);
                     service.createCustomer(customer);
                     System.out.println("Customer created successfully!");
                     break;
@@ -119,25 +142,27 @@ public class Main {
                     // update customer
                     System.out.println("Enter customer ID to update:");
                     int customerIdToUpdate = scanner.nextInt();
-                    scanner.nextLine(); // Consume newline
-
-                    System.out.println("Enter new customer type:");
-                    CustomerType newCustomerType = CustomerType.valueOf(scanner.nextLine().toUpperCase());
-
-                    System.out.println("Enter new customer state:");
-                    State newState = State.valueOf(scanner.nextLine().toUpperCase());
-
-                    // Fetch customer by ID
                     Optional<Customer> optionalCustomer = service.findCustomerById(customerIdToUpdate);
-                    if (optionalCustomer.isPresent()) {
-                        Customer customerToUpdate = optionalCustomer.get();
-                        customerToUpdate.setType(newCustomerType);
-                        customerToUpdate.setState(newState);
-                        service.updateCustomer(customerToUpdate);
-                        System.out.println("Customer updated successfully!");
-                    } else {
+                    scanner.nextLine(); // Consume newline
+                    if(!optionalCustomer.isPresent())
+                    {
                         System.out.println("Customer not found!");
+                        return;
                     }
+                    System.out.println("Enter new customer state: ACTIVE or INACTIVE or DEACTIVE");
+                    State newState;
+
+                    try {
+                        newState = State.valueOf(scanner.nextLine().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid state input!");
+                        return; //  input is invalid
+                    }
+
+                    Customer customerToUpdate = optionalCustomer.get();
+                    customerToUpdate.setState(newState);
+                    service.updateCustomer(customerToUpdate);
+                    System.out.println("Customer updated successfully!");
                     break;
                 case 3:
                     // Implement delete customer functionality
@@ -146,8 +171,10 @@ public class Main {
                     scanner.nextLine(); // Consume newline
 
 
-                    service.deleteCustomerById(customerIdToDelete);
-                    System.out.println("Customer deleted successfully!");
+                    if(service.deleteCustomerById(customerIdToDelete))
+                        System.out.println("Customer deleted successfully!");
+                    else
+                        System.out.println("Customer not found!");
                     break;
                 case 4:
                     // Implement find customer by ID functionality
@@ -199,21 +226,53 @@ public class Main {
             switch (option){
                 case 1:
                     //create contract
-                    System.out.println("Enter customer id:");
+                    System.out.print("Enter contract id: ");
                     int contractId = scanner.nextInt();
+                    scanner.nextLine(); // Consume newline
 
-                    System.out.println("Enter contract type:");
-                    ContractType contractType = ContractType.valueOf(scanner.nextLine().toUpperCase());
+                    if(service.findCustomerById(contractId).isPresent()) {
+                        System.out.println("Contract already exists!");
+                        return; // customer already exists
+                    }
 
-                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-                    String inputDate = scanner.nextLine();
-                    Date createdDate = dateFormat.parse(inputDate);
+                    System.out.println("Enter customer id: ");
 
-                    System.out.println("Enter contract state:");
-                    State state = State.valueOf(scanner.nextLine().toUpperCase());
+                    int customerId = scanner.nextInt();
+                    scanner.nextLine();
+                    Optional<Customer> customerOptional = service.findCustomerById(customerId);
+                    if(!customerOptional.isPresent())
+                    {
+                        System.out.println("Customer not found!");
+                        return;
+                    }
+
+                    Customer customer = customerOptional.get();
+
+                    System.out.println("Enter contract type: y for PREPAID, anything for POSTPAID");
+                    String contractTypeInput = scanner.nextLine().toUpperCase();
+
+                    ContractType contractType = contractTypeInput.equals("Y") ? ContractType.PREPAID : ContractType.POSTPAID;
+
+//                    CustomerType contractType = ContractType.equals("Y") ? CustomerType.INDIVIDUAL : CustomerType.BUSINESS;
+
+///                    System.out.println("Enter customer created date (YYYY-MM-DD):");
+//                    String inputDate = scanner.nextLine();
+///                    Date createdDate = dateFormat.parse(inputDate);
+
+                    System.out.println("Enter customer state: ACTIVE or INACTIVE or DEACTIVE");
+                    String stateInput = scanner.nextLine().toUpperCase();
+                    State state;
+                    try {
+                        state = State.valueOf(stateInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid state input!");
+                        return; //  input is invalid
+                    }
 
 
-                    Contract contract = new Contract(contractId,contractType, createdDate, state, null, null, null);
+                    Contract contract = new Contract(contractId,contractType, new Date(), state, new ArrayList<>(), customer, null);
+                    Contact contact = createContact(contract);
+                    contract.setContact(contact);
                     service.createContract(contract);
                     System.out.println("Contract created successfully!");
                     break;
@@ -222,24 +281,36 @@ public class Main {
                     System.out.println("Enter contract ID to update:");
                     int contractIdToUpdate = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
-
-                    System.out.println("Enter new contract type:");
-                    ContractType newContractType = ContractType.valueOf(scanner.nextLine().toUpperCase());
-
-                    System.out.println("Enter new contract state:");
-                    State newState = State.valueOf(scanner.nextLine().toUpperCase());
-
-                    // Fetch contract by ID
                     Optional<Contract> optionalContract = service.findContractById(contractIdToUpdate);
-                    if (optionalContract.isPresent()) {
-                        Contract contractToUpdate = optionalContract.get();
-                        contractToUpdate.setType(newContractType);
-                        contractToUpdate.setState(newState);
-                        service.updateContract(contractToUpdate);
-                        System.out.println("Contract updated successfully!");
-                    } else {
+                    if(!optionalContract.isPresent()) {
                         System.out.println("Contract not found!");
+                        return; // contract not found
                     }
+                    Contract contractToUpdate = optionalContract.get();
+
+                    System.out.print("Enter new contract type PREPAID or POSTPAID (empty to skip): ");
+                    try {
+                        String type = scanner.nextLine().toUpperCase();
+                        if(!type.isEmpty()) {
+                            ContractType newContractType = ContractType.valueOf(type);
+                            contractToUpdate.setType(newContractType);
+                        }
+                    } catch (IllegalArgumentException e){
+                        System.out.println("Invalid contract type! (No changes made)");
+                    }
+                    System.out.print("Enter new contract state ACTIVE, INACTIVE or DEACTIVE (empty to skip): ");
+                    try {
+                        String updatedState = scanner.nextLine().toUpperCase();
+                        if(!updatedState.isEmpty()) {
+                            State newState = State.valueOf(updatedState);
+                            contractToUpdate.setState(newState);
+                        }
+                    } catch (IllegalArgumentException e){
+                        System.out.println("Invalid contract type! (No changes made)");
+                    }
+
+                    service.updateContract(contractToUpdate);
+                    System.out.println("Contract updated successfully!");
                     break;
                 case 3:
                     // delete contract
@@ -247,8 +318,7 @@ public class Main {
                     int contractIdToDelete = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
 
-                    service.deleteContractById(contractIdToDelete);
-                    System.out.println("Contract deleted successfully!");
+                    System.out.printf("Contract deleted %s!%n", service.deleteContractById(contractIdToDelete) ? "succesfuly" : "failed");
                     break;
                 case 4:
                     // find contract
@@ -301,20 +371,158 @@ public class Main {
             switch (option){
                 case 1:
                     //create subscription
-                    System.out.println("Enter customer id:");
-                    int subscriptionId = scanner.nextInt();
+                    System.out.print("Enter subscription id: ");
+                    int subscriptionId;
 
-                    System.out.println("Enter phone number:");
+                    try {
+                        subscriptionId = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+
+                    if(service.findSubscriptionById(subscriptionId).isPresent()) {
+                        System.out.println("Subscription already exists!");
+                        return;
+                    }
+
+                    System.out.print("Enter contract id: ");
+                    int contractId;
+
+                    try {
+                        contractId = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e)
+                    {
+                        System.out.println("Invalid input!");
+                        return;
+                    }
+                    scanner.nextLine(); // Consume newline
+
+                    Optional<Contract> contractOptional = service.findContractById(contractId);
+
+                    if(!contractOptional.isPresent()) {
+                        System.out.println("Contract not found!");
+                        return;
+                    }
+
+                    Contract contract = contractOptional.get();
+
+
+
+                    System.out.print("Enter phone number (+3834(4|5|6){1-9}xxxxx): ");
                     String phoneNumber = scanner.nextLine();
 
-                    System.out.println("Enter customer created date (YYYY-MM-DD):");
-                    String inputDate = scanner.nextLine();
-                    Date createdDate = dateFormat.parse(inputDate);
+//                    System.out.println("Enter customer created date (YYYY-MM-DD):");
+//                    String inputDate = scanner.nextLine();
+//                    Date createdDate = dateFormat.parse(inputDate);
 
-                    System.out.println("Enter subscription state:");
-                    State state = State.valueOf(scanner.nextLine().toUpperCase());
+                    System.out.println("Enter subscription state: ACTIVE or INACTIVE or DEACTIVE");
+                    String stateInput = scanner.nextLine().toUpperCase();
 
-                    Subscription subscription = new Subscription(subscriptionId,phoneNumber, createdDate, state,null, null, null);
+                    // Directly set the state enum using valueOf method
+                    State state;
+                    try {
+                        state = State.valueOf(stateInput);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Invalid state input!");
+                        return; //  input is invalid
+                    }
+                    List<OptionalServiceType> optionalServiceTypes = new ArrayList<>();
+                    System.out.print("Type y to add Data as a service: ");
+                    String addData = scanner.nextLine().toUpperCase();
+
+                    if(addData.equals("Y")) {
+                        optionalServiceTypes.add(OptionalServiceType.DATA);
+                    }
+
+                    System.out.print("Type y to add Messages as a service: ");
+                    String addMessages = scanner.nextLine().toUpperCase();
+
+                    if(addMessages.equals("Y")) {
+                        optionalServiceTypes.add(OptionalServiceType.SMS);
+                    }
+
+                    Optional<List<Product>> optionalProducts = service.findAllProducts();
+                    List<Product> productList = optionalProducts.orElseGet(ArrayList::new);
+                    if(!optionalServiceTypes.contains(OptionalServiceType.DATA))
+                        productList = productList.stream().filter(x -> x.getServices().stream().noneMatch(y -> y.getType().getClass() == Data.class)).collect(Collectors.toList());
+                    if(!optionalServiceTypes.contains(OptionalServiceType.SMS))
+                        productList = productList.stream().filter(x -> x.getServices().stream().noneMatch(y -> y.getType().getClass() == Sms.class)).collect(Collectors.toList());
+
+                    List<Product> productsWithSim = productList.stream().filter(x -> x.getServices().stream().anyMatch(y -> y.getType() instanceof SimCard)).collect(Collectors.toList());
+
+                    List<Product> productsWithVoice = productList.stream().filter(x -> x.getServices().stream().anyMatch(y -> y.getType() instanceof Voice)).collect(Collectors.toList());
+
+                    System.out.println("Available products with SimCard:");
+                    productsWithSim.forEach(System.out::println);
+
+
+                    System.out.print("Enter product with SimCard id: ");
+                    int simId;
+                    try {
+                        simId = scanner.nextInt();
+                    }
+                    catch (InputMismatchException  e) {
+                        System.out.println("Invalid input!");
+                        return; // input is invalid
+                    }
+                    scanner.nextLine(); // Consume newline
+
+                    boolean isValidId = false;
+
+                    Product productWithSim = null;
+
+                    for(Product product : productsWithSim) {
+                        if(product.getId() == simId) {
+                            isValidId = true;
+                            productWithSim = product;
+                            break;
+                        }
+                    }
+
+                    if(!isValidId) {
+                        System.out.println("Wrong product id!");
+                        return;
+                    }
+
+
+
+                    List<Product> subscriptionProducts = new ArrayList<>();
+                    subscriptionProducts.add(productWithSim);
+
+                    if(!productsWithVoice.contains(productWithSim)) {
+                        System.out.println("Available products with Voice:");
+                        productsWithVoice.forEach(System.out::println);
+                        System.out.print("Enter product with Voice id: ");
+                        int voiceId;
+                        try {
+                            voiceId = scanner.nextInt();
+                        } catch (InputMismatchException e) {
+                            System.out.println("Invalid input!");
+                            return;
+                        }
+                        Product productWithVoice = null;
+                        scanner.nextLine(); // Consume newline
+                        for(Product product : productsWithVoice) {
+                            if(product.getId() == voiceId) {
+                                productWithVoice = product;
+                                break;
+                            }
+                        }
+
+                        if(productWithVoice == null) {
+                            System.out.println("Wrong product id!");
+                            return;
+                        }
+                        subscriptionProducts.add(productWithVoice);
+                    }
+
+                    Subscription subscription = new Subscription(subscriptionId,phoneNumber, new Date(), state, contract, subscriptionProducts, optionalServiceTypes,  null);
+                    Contact contact = createContact(subscription);
+                    subscription.setContact(contact);
                     service.createSubscription(subscription);
                     System.out.println("Subscription created successfully!");
                     break;
@@ -323,38 +531,57 @@ public class Main {
                     System.out.println("Enter subscription ID to update:");
                     int subscriptionIdToUpdate = scanner.nextInt();
                     scanner.nextLine(); // Consume newline
+                    Optional<Subscription> optionalSubscription = service.findSubscriptionById(subscriptionIdToUpdate);
 
-                    System.out.println("Enter new phone number:");
-                    String newPhoneNumber = scanner.nextLine();
+                    if(!optionalSubscription.isPresent())
+                    {
+                        System.out.println("Subscription not found");
+                        return;
+                    }
+                    Subscription subscriptionToUpdate = optionalSubscription.get();
 
-                    System.out.println("Enter new subscription state:");
-                    State newState = State.valueOf(scanner.nextLine().toUpperCase());
+                    System.out.print("Enter new subscription state (empty to not change) ACTIVE, INACTIVE or DEACTIVE: ");
+                    try {
+                        String stateIn = scanner.nextLine().toUpperCase();
+                        if(!stateIn.isEmpty())
+                            subscriptionToUpdate.setState(State.valueOf(stateIn));
+                    }
+                    catch (IllegalArgumentException e) {
+                        System.out.println("Wrong state!");
+                        return;
+                    }
 
                     // Fetch subscription by ID
-                    Optional<Subscription> optionalSubscription = service.findSubscriptionById(subscriptionIdToUpdate);
-                    if (optionalSubscription.isPresent()) {
-                        Subscription subscriptionToUpdate = optionalSubscription.get();
-                        subscriptionToUpdate.setPhoneNumber(newPhoneNumber);
-                        subscriptionToUpdate.setState(newState);
-                        service.updateSubscription(subscriptionToUpdate);
-                        System.out.println("Subscription updated successfully!");
-                    } else {
-                        System.out.println("Subscription not found!");
-                    }
+
+                    System.out.printf("Subscription updated %s!%n", service.updateSubscription(subscriptionToUpdate) ? "succesfuly" : "failed");
                     break;
                 case 3:
                     //delete subscription
-                    System.out.println("Enter subscription ID to delete:");
-                    int subscriptionIdToDelete = scanner.nextInt();
+                    System.out.print("Enter subscription ID to delete: ");
+                    int subscriptionIdToDelete;
+                    try {
+                        subscriptionIdToDelete = scanner.nextInt();
+                    }
+                    catch (InputMismatchException e) {
+                        System.out.println("Id should be a number");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
-                    service.deleteSubscriptionById(subscriptionIdToDelete);
-                    System.out.println("Subscription deleted successfully!");
+
+                    System.out.printf("Subscription deleted %s!%n", service.deleteSubscriptionById(subscriptionIdToDelete) ? "succesfuly" : "failed");
                     break;
                 case 4:
                     //find by id
-                    System.out.println("Enter subscription ID to find:");
-                    int subscriptionIdToFind = scanner.nextInt();
+                    System.out.print("Enter subscription ID to find: ");
+                    int subscriptionIdToFind;
+                    try {
+                        subscriptionIdToFind = scanner.nextInt();
+                    }
+                    catch (InputMismatchException e) {
+                        System.out.println("Id should be a number");
+                        return;
+                    }
                     scanner.nextLine(); // Consume newline
 
                     Optional<Subscription> foundSubscription = service.findSubscriptionById(subscriptionIdToFind);
@@ -413,6 +640,50 @@ public class Main {
 
         String customerName = scanner.nextLine();
         return new BusinessContact(customer.getId(), ContactType.CU, new Date(), customer.getState(), customerName);
+    }
+
+    public static Contact createContact(Contract contract) {
+        System.out.println("Enter contact first name: ");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter contact last name: ");
+        String lastName = scanner.nextLine();
+        Date dob;
+        System.out.println("Enter customer date of birth (YYYY-MM-DD):");
+        String inputDate = scanner.nextLine();
+        while(true) {
+            try {
+                dob = dateFormat.parse(inputDate);
+                break;
+            }
+            catch (ParseException e) {
+                System.out.println("Invalid date format. Please enter the date in the format YYYY-MM-DD: ");
+                inputDate = scanner.nextLine();
+            }
+        }
+        return new IndividualContact(contract.getId(), ContactType.CO, new Date(), contract.getState(), name, lastName, dob); // add dob
+    }
+
+    public static Contact createContact(Subscription subscription) {
+        System.out.println("Enter contact first name: ");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter contact last name: ");
+        String lastName = scanner.nextLine();
+        Date dob;
+        System.out.println("Enter customer date of birth (YYYY-MM-DD):");
+        String inputDate = scanner.nextLine();
+        while(true) {
+            try {
+                dob = dateFormat.parse(inputDate);
+                break;
+            }
+            catch (ParseException e) {
+                System.out.println("Invalid date format. Please enter the date in the format YYYY-MM-DD: ");
+                inputDate = scanner.nextLine();
+            }
+        }
+        return new IndividualContact(subscription.getId(), ContactType.CO, new Date(), subscription.getState(), name, lastName, dob); // add dob
     }
 }
 

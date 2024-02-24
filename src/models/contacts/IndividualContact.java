@@ -20,4 +20,9 @@ public class IndividualContact extends Contact{
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
     }
+
+    @Override
+    public String toString() {
+        return "Individual Contact id=" + getId() + ", type=" + getType() + ", createdDate=" + getCreatedDate() + ", state=" + getState() + ", name='" + name + '\'' + ", lastName='" + lastName + '\'' + ", dateOfBirth=" + dateOfBirth ;
+    }
 }

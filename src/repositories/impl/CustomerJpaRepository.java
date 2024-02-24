@@ -63,9 +63,7 @@ public class CustomerJpaRepository implements CustomerRepository {
                     .getSingleResult();
 
             if(Objects.nonNull(customerData)) {
-                Transaction trx = session.getTransaction();;
                 session.remove(customerData);
-                trx.commit();
                 return true;
             }
             return false;
@@ -85,7 +83,7 @@ public class CustomerJpaRepository implements CustomerRepository {
             CustomerData customerData = session.createNamedQuery("CustomerData.findById", CustomerData.class)
                     .setParameter("id", id)
                     .getSingleResult();
-            customer = Optional.ofNullable(mapper.fromCustomerData(customerData));
+            customer = Optional.ofNullable(mapper.fromCustomerData(customerData, true));
         }
         catch (NoResultException nre) {
             return Optional.empty();

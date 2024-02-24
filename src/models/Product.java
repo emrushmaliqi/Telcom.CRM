@@ -1,5 +1,6 @@
 package models;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Product {
 
+    @Setter(AccessLevel.NONE)
     private int id;
     private String name;
     private double price;
@@ -35,5 +37,10 @@ public class Product {
         return products.stream()
                 .filter(product -> product.getToDateTime().isAfter(now) && product.getToDateTime().isBefore(xDaysLater))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString(){
+        return "Product has id=" + id + ", name='" + name + '\'' + ", price=" + price + ", fromDateTime=" + fromDateTime + ", toDateTime=" + toDateTime + ", services=" + services + ", subscriptions=" + subscriptions ;
     }
 }

@@ -1,10 +1,7 @@
 package models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 
-import lombok.Setter;
 import models.contacts.Contact;
 import enums.ContractType;
 import enums.State;
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 @Setter
 @AllArgsConstructor
 public class Contract {
+    @Setter(AccessLevel.NONE)
     private int id;
     private ContractType type;
     private Date createdDate;
@@ -29,6 +27,11 @@ public class Contract {
         return products.stream()
                 .filter(product -> product.getPrice() < x)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String toString(){
+        return "Contract id=" + id +", type=" + type +", createdDate=" + createdDate +", state=" + state + ", subscriptions=" + subscriptions + ", customer=" + customer + ", contact=" + contact ;
     }
     @Override
     public boolean equals(Object o) {

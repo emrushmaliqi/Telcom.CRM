@@ -31,7 +31,7 @@ public class SubscriptionJpaRepository implements SubscriptionRepository {
         try(Session session = sessionFactory.openSession()) {
             SubscriptionData subscriptionData = mapper.toSubscriptionData(subscription);
             Transaction trx = session.beginTransaction();
-            session.persist(subscriptionData);
+            session.merge(subscriptionData);
             trx.commit();
         }
         catch (HibernateException e) {
@@ -64,7 +64,7 @@ public class SubscriptionJpaRepository implements SubscriptionRepository {
     				.setParameter("id", id)
     				.getSingleResult();
     		if(Objects.nonNull(subscriptionData)) {
-                Transaction trx = session.getTransaction();
+                Transaction trx = session.beginTransaction();
                 session.remove(subscriptionData);
                 trx.commit();
                 return true;

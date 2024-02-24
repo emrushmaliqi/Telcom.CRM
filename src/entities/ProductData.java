@@ -14,6 +14,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@NamedQueries({
+        @NamedQuery(name = "ProductData.findById", query = "SELECT p FROM ProductData p WHERE p.id = :id"),
+        @NamedQuery(name = "ProductData.findAll", query = "SELECT p FROM ProductData p")
+})
 public class ProductData {
 
     @Id

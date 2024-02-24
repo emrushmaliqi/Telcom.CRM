@@ -1,0 +1,140 @@
+package Seeders;
+
+import enums.ContactType;
+import enums.CustomerType;
+import enums.State;
+import models.Customer;
+import models.Product;
+import models.contacts.BusinessContact;
+import models.contacts.Contact;
+import models.services.*;
+import repositories.CustomerRepository;
+import repositories.ProductRepository;
+import repositories.Repository;
+import repositories.ServiceRepository;
+import repositories.impl.CustomerJpaRepository;
+import repositories.impl.ProductJpaRepository;
+import repositories.impl.ServiceJpaRepository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+public class Seeder {
+    private static ProductRepository productRepository = new ProductJpaRepository();
+
+    private static ServiceRepository  serviceRepository = new ServiceJpaRepository();
+    public static void seed() {
+
+        ServiceType sim = new SimCard();
+        ServiceType voice = new Voice(100);
+        ServiceType voice2 = new Voice(200);
+        ServiceType voice3 = new Voice(300);
+        ServiceType sms = new Sms(50);
+        ServiceType sms2 = new Sms(25);
+        ServiceType data = new Data(10);
+        ServiceType data2 = new Data(30);
+        Service service1 = new Service(1001, sim, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service2 = new Service(1002, voice, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service3 = new Service(1003, sms, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service4 = new Service(1004, data, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service5 = new Service(1005, voice2, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service6 = new Service(1006, sms2, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service7 = new Service(1007, data2, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service8 = new Service(1008, voice3, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service9 = new Service(1009, sms2, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service10 = new Service(1010, data2, new Date(), State.DEACTIVE, new ArrayList<>());
+        Service service11 = new Service(1011, sms2, new Date(), State.ACTIVE, new ArrayList<>());
+        Service service12 = new Service(1012, data2, new Date(), State.ACTIVE, new ArrayList<>());
+
+        serviceRepository.create(service1);
+        List<Service> services = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
+        services.add(service1);
+        services.add(service2);
+        products.add(new Product(2001, "SIM_VOICE_100", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.remove(service2);
+        services.add(service8);
+        products.add(new Product(2003, "SIM_VOICE_300", 10.5, LocalDate.of(2024, Month.MARCH, 24).atStartOfDay(), LocalDate.of(2024, Month.JUNE, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service4);
+        products.add(new Product(2004, "DATA", 4.0, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service5);
+        services.add(service6);
+        services.add(service7);
+        products.add(new Product(2005, "Pack", 16.5, LocalDate.of(2024, Month.FEBRUARY, 11).atStartOfDay(), LocalDate.of(2024, Month.MARCH, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service10);
+        products.add(new Product(2006, "PACK_2", 8.5, LocalDate.of(2024, Month.FEBRUARY, 14).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 25).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.add(service11);
+        products.add(new Product(2007, "PACK_3", 9.5, LocalDate.of(2024, Month.JANUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service12);
+        services.add(service11);
+        services.add(service8);
+        services.add(service1);
+        products.add(new Product(2008, "FULL_PACK", 22.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.APRIL, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service9);
+        products.add(new Product(2009, "PACK_4", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service12);
+        services.add(service4);
+        products.add(new Product(2010, "PACK_100", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service2);
+        services.add(service4);
+        products.add(new Product(2011, "PACK_5", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service9);
+        services.add(service3);
+        products.add(new Product(2012, "PACK_6", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service1);
+        services.add(service5);
+        products.add(new Product(2013, "PACK_7", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service8);
+        services.add(service5);
+        products.add(new Product(2014, "PACK_8", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service6);
+        services.add(service4);
+        products.add(new Product(2015, "PACK_9", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service12);
+        services.add(service4);
+        services.clear();
+        services.add(service4);
+        services.add(service3);
+        products.add(new Product(2016, "PACK_10", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service1);
+        services.add(service3);
+        products.add(new Product(2017, "PACK_11", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service1);
+        services.add(service4);
+        products.add(new Product(2018, "PACK_12", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service4);
+        services.add(service1);
+        products.add(new Product(2019, "PACK_13", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service1);
+        services.add(service5);
+        products.add(new Product(2020, "PACK_14", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+        services.clear();
+        services.add(service5);
+        services.add(service12);
+        products.add(new Product(2002, "PACK_15", 6.5, LocalDate.of(2024, Month.FEBRUARY, 24).atStartOfDay(), LocalDate.of(2024, Month.FEBRUARY, 28).atStartOfDay(), new ArrayList<>(services), new ArrayList<>()));
+
+        for(Product product : products) {
+                productRepository.create(product);
+        }
+    }
+}

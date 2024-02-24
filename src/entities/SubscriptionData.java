@@ -40,13 +40,13 @@ public class SubscriptionData {
     private List<ProductData> products;
 
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "SUBSCRIPTION_SERVICE_TYPE", joinColumns = @JoinColumn(name = "id"))
     @Enumerated(EnumType.ORDINAL)
     private List<OptionalServiceType> serviceTypes;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ContactData contact;
 
 }

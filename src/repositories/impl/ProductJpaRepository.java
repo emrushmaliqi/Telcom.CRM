@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 public class ProductJpaRepository implements ProductRepository {
 
-    private ProductMapper mapper = new ProductMapper();
+    private final ProductMapper mapper = new ProductMapper();
     private final SessionFactory sessionFactory = HibernateUtil.INSTANCE.getSessionFactory();
 
     @Override
@@ -32,7 +32,7 @@ public class ProductJpaRepository implements ProductRepository {
         try(Session session = sessionFactory.openSession()) {
             ProductData productData = mapper.toProductData(product);
             Transaction trx = session.beginTransaction();
-            session.persist(productData);
+            session.merge(productData);
             trx.commit();
         }
         catch (HibernateException e) {
@@ -66,9 +66,7 @@ public class ProductJpaRepository implements ProductRepository {
                     .getSingleResult();
 
             if(Objects.nonNull(productData)) {
-                Transaction trx = session.getTransaction();;
                 session.remove(productData);
-                trx.commit();
                 return true;
             }
             return false;

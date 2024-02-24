@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "CONTRACT")
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 @NamedQueries({
         @NamedQuery(name = "ContractData.findById", query = "SELECT c FROM ContractData c WHERE c.id = :id"),
@@ -36,6 +37,6 @@ public class ContractData {
     @ManyToOne
     private CustomerData customer;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private ContactData contact;
 }
